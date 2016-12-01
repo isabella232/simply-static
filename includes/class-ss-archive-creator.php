@@ -43,6 +43,8 @@ class Archive_Creator {
 		$this->options = Options::instance();
 		$this->archive_dir = $this->options->get_archive_dir();
 		$this->archive_start_time = $this->options->get( 'archive_start_time' );
+
+		add_filter( 'filter_copy_static_file', array( $this, 'copy_static_file_callback'), 10, 2 );
 	}
 
 	/**
@@ -259,7 +261,8 @@ class Archive_Creator {
 
 				// check that destination file doesn't exist OR exists but is writeable
 				if ( ! file_exists( $destination_file_path ) || is_writable( $destination_file_path ) ) {
-					$copy = copy( $origin_file_path, $destination_file_path );
+					$copy = apply_filters( 'filter_copy_static_file', $origin_file_path, $destination_file_path );
+
 					if ( $copy === false ) {
 						$static_page->set_error_message( 'Unable to copy file to destination' );
 					}
@@ -273,6 +276,12 @@ class Archive_Creator {
 		}
 
 		return array( $pages_processed, $total_pages );
+	}
+
+	public function copy_static_file_callback( $origin_file_path, $destination_file_path ) {
+	    $copy = copy( $origin_file_path, $destination_file_path );
+
+	    return $copy;
 	}
 
 	/**
