@@ -56,7 +56,7 @@ class View {
 		list($plugin_dir) = explode( '/', plugin_basename( __FILE__ ) );
 
 		// create an absolute path to views directory
-		$path_array = array( WP_PLUGIN_DIR, $plugin_dir, self::DIRECTORY );
+		$path_array = array( plugin_dir_path(__FILE__).'../', self::DIRECTORY );
 
 		$this->path = implode( '/', $path_array );
 	}
